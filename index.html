@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NPS ProTrade ULTRA MAX</title>
+    <script src="https://telegram.org"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: sans-serif; -webkit-user-select: none; user-select: none; }
+        body { background-color: #0B0E11; color: #FFFFFF; padding-bottom: 30px; }
+        .glass-card { background: rgba(17, 34, 64, 0.4); backdrop-filter: blur(12px); border: 1px solid rgba(0, 240, 255, 0.15); border-radius: 16px; padding: 16px; margin: 12px; }
+        .neon-text-cyan { color: #00f0ff; text-shadow: 0 0 8px rgba(0, 240, 255, 0.5); }
+        .lang-bar { display: flex; justify-content: flex-end; gap: 6px; padding: 10px 12px; }
+        .lang-btn { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); color: #AAAAAA; padding: 4px 10px; border-radius: 20px; font-size: 11px; cursor: pointer; }
+        .lang-btn.active { background: rgba(0, 240, 255, 0.15); border-color: #00f0ff; color: #00f0ff; }
+        .app-header { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; border-bottom: 1px solid rgba(0, 240, 255, 0.1); }
+        .brand-title { font-size: 20px; font-weight: 800; }
+        .status-badge { background: rgba(0, 240, 255, 0.1); border: 1px solid #00f0ff; padding: 4px 12px; border-radius: 20px; font-size: 11px; }
+        .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 12px; }
+        .info-box { background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 12px; padding: 12px; text-align: center; }
+        .info-label { font-size: 11px; color: #888888; }
+        .info-value { font-size: 16px; font-weight: 700; }
+        .tf-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
+        .trend-up { color: #00ffaa; font-weight: bold; }
+        .trend-down { color: #ff0055; font-weight: bold; }
+        .action-container { display: flex; gap: 12px; margin: 16px 12px; }
+        .btn-action { flex: 1; padding: 14px; border-radius: 12px; font-size: 14px; font-weight: 700; cursor: pointer; text-align: center; }
+        .btn-buy { background: rgba(0, 240, 255, 0.1); border: 1px solid #00f0ff; color: #00f0ff; }
+        .btn-reject { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.15); color: #FFFFFF; }
+    </style>
+</head>
+<body>
+
+    <div class="lang-bar">
+        <button id="btn-uz" class="lang-btn active" onclick="changeLanguage('uz')">🇺🇿 UZ</button>
+        <button id="btn-ru" class="lang-btn" onclick="changeLanguage('ru')">🇷🇺 RU</button>
+        <button id="btn-en" class="lang-btn" onclick="changeLanguage('en')">🇬🇧 EN</button>
+    </div>
+
+    <div class="app-header">
+        <div class="brand-title neon-text-cyan">NPS ProTrade</div>
+        <div id="statusBadge" class="status-badge neon-text-cyan">FAOL ✔</div>
+    </div>
+
+    <div class="info-grid">
+        <div class="info-box">
+            <div id="lblUser" class="info-label">Foydalanuvchi</div>
+            <div class="info-value neon-text-cyan">Nurik_Trader</div>
+        </div>
+        <div class="info-box">
+            <div id="lblWinRate" class="info-label">Win Rate (TP2)</div>
+            <div class="info-value" style="color: #00ffaa;">84.6%</div>
+        </div>
+    </div>
+
+    <div class="glass-card">
+        <h4 id="titleTfAnalysis" style="font-size: 14px; margin-bottom: 12px;" class="neon-text-cyan">Ko'p Taymfreymli Tahlil</h4>
+        <div class="tf-row">
+            <span id="lblH4">H4 (Katta Trend)</span>
+            <span id="trendH4" class="trend-up">O'SISH ▲</span>
+        </div>
+        <div class="tf-row">
+            <span id="lblH1">H1 (BOS / Struktura)</span>
+            <span id="trendH1" class="trend-up">O'SISH ▲</span>
+        </div>
+        <div class="tf-row">
+            <span id="lblM15">M15 (Kirish Zonasi)</span>
+            <span id="trendM15" class="trend-down">KUTISH ⏳</span>
+        </div>
+    </div>
+
+    <div class="action-container">
+        <div id="btnBuy" class="btn-action btn-buy" onclick="executeTrade('BUY')">BITIMNI OCHISH</div>
+        <div id="btnReject" class="btn-action btn-reject" onclick="executeTrade('REJECT')">RAD ETISH</div>
+    </div>
+
+    <div class="glass-card">
+        <h4 id="titleWallet" style="font-size: 14px; margin-bottom: 8px;" class="neon-text-cyan">Mening Hamyonim</h4>
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <p id="lblBalance" style="font-size: 11px; color: #888888;">USDT BALANS (TRC-20)</p>
+                <h2 style="font-size: 24px; font-weight: 800; margin-top: 4px; color: #00f0ff;">$0.00</h2>
+            </div>
+            <button id="btnDeposit" class="lang-btn" style="padding: 8px 16px; font-size: 12px; border-color: #00f0ff; color: #00f0ff; font-weight: bold;" onclick="alert('Tez kunda USDT to\'lov tizimi ishga tushadi!')">DEPOZIT ➕</button>
+        </div>
+    </div>
+
+    <script>
+        const translations = {
+            uz: {
+                user: "Foydalanuvchi", winrate: "Win Rate (TP2)", tfTitle: "Ko'p Taymfreymli Tahlil",
+                h4: "H4 (Katta Trend)", h1: "H1 (BOS / Struktura)", m15: "M15 (Kirish Zonasi)",
+                h4Val: "O'SISH ▲", h1Val: "O'SISH ▲", m15Val: "KUTISH ⏳",
+                btnBuy: "BITIMNI OCHISH", btnReject: "RAD ETISH", wallet: "Mening Hamyonim",
+                balance: "USDT BALANS (TRC-20)", deposit: "DEPOZIT ➕", status: "FAOL ✔"
+            },
+            ru: {
+                user: "Пользователь", winrate: "Вин Рейт (TP2)", tfTitle: "Мульти-Таймфрейм Анализ",
+                h4: "H4 (Старший Тренд)", h1: "H1 (BOS / Структура)", m15: "M15 (Зона Входа)",
+                h4Val: "РОСТ ▲", h1Val: "РОСТ ▲", m15Val: "ОЖИДАНИЕ ⏳",
+                btnBuy: "ОТКРЫТЬ СДЕЛКУ", btnReject: "ОТКЛОНИТЬ", wallet: "Мой Кошелек",
+                balance: "БАЛАНС USDT (TRC-20)", deposit: "ДЕПОЗИТ ➕", status: "АКТИВЕН ✔"
+            },
+            en: {
+                user: "User", winrate: "Win Rate (TP2)", tfTitle: "Multi-Timeframe Analysis",
+                h4: "H4 (Higher Trend)", h1: "H1 (BOS / Structure)", m15: "M15 (Entry Zone)",
+                h4Val: "BULLISH ▲", h1Val: "BULLISH ▲", m15Val: "WAITING ⏳",
+                btnBuy: "EXECUTE TRADE", btnReject: "REJECT", wallet: "My Wallet",
+                balance: "USDT BALANCE (TRC-20)", deposit: "DEPOSIT ➕", status: "ACTIVE ✔"
+            }
+        };
+
+        function changeLanguage(lang) {
+            document.getElementById('btn-uz').classList.remove('active');
+            document.getElementById('btn-ru').classList.remove('active');
+            document.getElementById('btn-en').classList.remove('active');
+            document.getElementById('btn-' + lang).classList.add('active');
+
+            document.getElementById('lblUser').innerText = translations[lang].user;
+            document.getElementById('lblWinRate').innerText = translations[lang].winrate;
+            document.getElementById('titleTfAnalysis').innerText = translations[lang].tfTitle;
+            
+            document.getElementById('lblH4').innerText = translations[lang].h4;
+            document.getElementById('lblH1').innerText = translations[lang].h1;
+            document.getElementById('lblM15').innerText = translations[lang].m15;
+            document.getElementById('trendH4').innerText = translations[lang].h4Val;
+            document.getElementById('trendH1').innerText = translations[lang].h1Val;
+            document.getElementById('trendM15').innerText = translations[lang].m15Val;
+
+            document.getElementById('btnBuy').innerText = translations[lang].btnBuy;
+            document.getElementById('btnReject').innerText = translations[lang].btnReject;
+            document.getElementById('titleWallet').innerText = translations[lang].wallet;
+            document.getElementById('lblBalance').innerText = translations[lang].balance;
+            document.getElementById('statusBadge').innerText = translations[lang].status;
+        }
+
+        function executeTrade(type) {
+            alert("Buyruq berildi: " + type);
+        }
+    </script>
+</body>
+</html>
