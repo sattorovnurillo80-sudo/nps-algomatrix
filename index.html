@@ -111,7 +111,9 @@ h2::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,var(--gl
 .seg{display:flex;gap:6px}
 .seg button{flex:1;font:600 13px var(--f-body);padding:9px 6px;border-radius:10px;border:1px solid var(--line);background:var(--panel2);color:var(--mute);cursor:pointer}
 .seg button[aria-pressed="true"]{background:var(--gg);color:var(--gold-ink);border-color:transparent}
-.chart{width:100%;height:auto;display:block;margin-top:12px}
+.chart{width:100%;height:auto;display:block}
+.tvbox{padding:0;overflow:hidden;margin-top:12px;height:min(70vh,480px)}
+#tv{width:100%;height:100%}
 .legend{display:grid;gap:6px;margin-top:10px;font-size:13px}
 .legend div{display:flex;justify-content:space-between;gap:10px;align-items:center}
 .legend span{display:flex;align-items:center;gap:8px;color:var(--mute);min-width:0}
@@ -223,9 +225,11 @@ nav .in{max-width:560px;margin:0 auto;display:grid;grid-template-columns:repeat(
 <section id="v-grafik" class="view" hidden>
   <h1><span class="g" data-t="ch_h"></span></h1>
   <p class="lead" data-t="ch_lead"></p>
+  <div class="seg" role="group" id="chsel"><button type="button" data-c="turtle">XAUUSD</button><button type="button" data-c="nas">NAS100</button><button type="button" data-c="eth">ETHUSD</button></div>
+  <div class="card tvbox"><div id="tv"></div></div>
+  <h2 data-t="ch_lv"></h2>
   <div class="card gold">
-    <div class="seg" role="group" id="chsel"><button type="button" data-c="turtle">XAUUSD</button><button type="button" data-c="nas">NAS100</button><button type="button" data-c="eth">ETHUSD</button></div>
-    <div id="chart"><div class="skel" style="margin-top:12px;height:220px"></div></div>
+    <div id="chart"><div class="skel" style="height:220px"></div></div>
     <div class="legend" id="legend"></div>
   </div>
   <p class="note" data-t="ch_note"></p>

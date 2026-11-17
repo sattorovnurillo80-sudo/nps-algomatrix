@@ -26,7 +26,7 @@ function applyLang(){
   document.documentElement.lang = lang;
   document.querySelectorAll("[data-t]").forEach(el => el.innerHTML = t(el.dataset.t));
   document.querySelectorAll(".lang button").forEach(b => b.setAttribute("aria-pressed", b.dataset.l === lang));
-  renderYears(); renderSignals(); renderChart(); renderJournal(); renderNews(); renderMarkets(); tick(); calc(); renderCrypto();
+  renderYears(); renderSignals(); renderChart(); tvShow(false); renderJournal(); renderNews(); renderMarkets(); tick(); calc(); renderCrypto();
 }
 document.querySelectorAll(".lang button").forEach(b => b.onclick = () => { lang = b.dataset.l; store("lang", lang); applyLang(); });
 
@@ -40,7 +40,7 @@ function show(){
   document.querySelectorAll(".tab").forEach(a => a.dataset.v === tab ? a.setAttribute("aria-current", "page") : a.removeAttribute("aria-current"));
   window.scrollTo(0, 0);
   if(v === "kripto" && (!KR || Date.now() - KR.at > 4 * 60000)) loadCrypto();
-  if(v === "grafik") renderChart();
+  if(v === "grafik"){ renderChart(); tvShow(false); }
 }
 addEventListener("hashchange", show);
 
@@ -52,7 +52,9 @@ function partsIn(tz, d){
 }
 const TKF = new Intl.DateTimeFormat("en-GB", {timeZone: "Asia/Tashkent", day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit", hourCycle: "h23"});
 const LOC = {uz: "uz-Latn-UZ", ru: "ru-RU", en: "en-GB"};
-const TKW = {format: d => new Intl.DateTimeFormat(LOC[lang], {timeZone: "Asia/Tashkent", weekday: "short", hour: "2-digit", minute: "2-digit", hourCycle: "h23"}).format(d)};
+const WD = {uz: ["Du","Se","Ch","Pa","Ju","Sh","Ya"], ru: ["пн","вт","ср","чт","пт","сб","вс"], en: ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"]};
+const TKW = {format: d => { const p = new Intl.DateTimeFormat("en-GB", {timeZone: "Asia/Tashkent", weekday: "short", hour: "2-digit", minute: "2-digit", hourCycle: "h23"}).formatToParts(d), g = k => p.find(x => x.type === k).value;
+  const i = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"].indexOf(g("weekday")); return `${WD[lang][i]} ${g("hour")}:${g("minute")}`; }};
 const tkStr = ms => { const p = TKF.formatToParts(new Date(ms)), g = k => p.find(x => x.type === k).value; return `${g("day")}.${g("month")} ${g("hour")}:${g("minute")}`; };
 const hms = sec => { sec = Math.max(0, Math.floor(sec)); const h = Math.floor(sec / 3600), m = Math.floor(sec % 3600 / 60), s = sec % 60;
   return (h ? h + ":" + String(m).padStart(2, "0") : String(m)) + ":" + String(s).padStart(2, "0"); };
@@ -139,8 +141,10 @@ async function loadMarkets(){
   try{
     const out = [];
     for(const sym of ["XAUUSD", "NAS100", "ETHUSD", "BTCUSD"]){
-      const d = await NPS.fetchBars(sym, "1DAY", 3); const a = d[d.length - 1], b = d[d.length - 2];
-      out.push({sym, p: a.c, ch: (a.c / b.c - 1) * 100});
+      // oxirgi soatlik narx va 24 soat oldingi narx bilan farq (kunlik sham hali yopilmagan bo'lishi mumkin)
+      const h = await NPS.fetchBars(sym, "1HOUR", 60), a = h[h.length - 1];
+      const ref = h.filter(b => b.t <= a.t - 24 * H).pop() || h[0];
+      out.push({sym, p: a.c, ch: (a.c / ref.c - 1) * 100});
     }
     MK = out; renderMarkets();
   }catch(e){}
@@ -242,7 +246,24 @@ function renderSignals(){
 
 /* ---- grafik darajalari (SVG shamlar) ---- */
 let chSel = load("chart") || "turtle";
-document.querySelectorAll("#chsel button").forEach(b => b.onclick = () => { chSel = b.dataset.c; store("chart", chSel); renderChart(); });
+document.querySelectorAll("#chsel button").forEach(b => b.onclick = () => { chSel = b.dataset.c; store("chart", chSel); renderChart(); tvShow(true); });
+/* TradingView jonli grafigi (taymfreymlar, chizish asboblari bilan) */
+const TV = {turtle: ["VANTAGE:XAUUSD", "60"], nas: ["VANTAGE:NAS100", "30"], eth: ["VANTAGE:ETHUSD", "60"]};
+let tvKey = null, tvLoading = false;
+function tvShow(force){
+  if($("v-grafik").hidden) return;
+  const key = chSel + "|" + lang; if(!force && key === tvKey) return;
+  if(!window.TradingView){
+    if(tvLoading) return; tvLoading = true;
+    const sc = document.createElement("script"); sc.src = "https://s3.tradingview.com/tv.js";
+    sc.onload = () => { tvLoading = false; tvShow(true); }; sc.onerror = () => { tvLoading = false; $("tv").innerHTML = `<p class="mute" style="padding:16px">${t("sg_err")}</p>`; };
+    document.head.appendChild(sc); return;
+  }
+  tvKey = key; $("tv").innerHTML = "";
+  new TradingView.widget({container_id: "tv", autosize: true, symbol: TV[chSel][0], interval: TV[chSel][1], timezone: "Asia/Tashkent",
+    theme: "dark", style: "1", locale: lang === "en" ? "en" : "ru", toolbar_bg: "#10131b", enable_publishing: false, allow_symbol_change: true,
+    hide_side_toolbar: false, withdateranges: true, save_image: false, backgroundColor: "#0b0d13"});
+}
 function renderChart(){
   document.querySelectorAll("#chsel button").forEach(b => b.setAttribute("aria-pressed", b.dataset.c === chSel));
   if(!$("chart")) return;
