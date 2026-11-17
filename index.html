@@ -1,142 +1,354 @@
-<!DOCTYPE html>
-<html lang="uz">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NPS ProTrade ULTRA MAX</title>
-    <script src="https://telegram.org"></script>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: sans-serif; -webkit-user-select: none; user-select: none; }
-        body { background-color: #0B0E11; color: #FFFFFF; padding-bottom: 30px; }
-        .glass-card { background: rgba(17, 34, 64, 0.4); backdrop-filter: blur(12px); border: 1px solid rgba(0, 240, 255, 0.15); border-radius: 16px; padding: 16px; margin: 12px; }
-        .neon-text-cyan { color: #00f0ff; text-shadow: 0 0 8px rgba(0, 240, 255, 0.5); }
-        .lang-bar { display: flex; justify-content: flex-end; gap: 6px; padding: 10px 12px; }
-        .lang-btn { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); color: #AAAAAA; padding: 4px 10px; border-radius: 20px; font-size: 11px; cursor: pointer; }
-        .lang-btn.active { background: rgba(0, 240, 255, 0.15); border-color: #00f0ff; color: #00f0ff; }
-        .app-header { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; border-bottom: 1px solid rgba(0, 240, 255, 0.1); }
-        .brand-title { font-size: 20px; font-weight: 800; }
-        .status-badge { background: rgba(0, 240, 255, 0.1); border: 1px solid #00f0ff; padding: 4px 12px; border-radius: 20px; font-size: 11px; }
-        .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 12px; }
-        .info-box { background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 12px; padding: 12px; text-align: center; }
-        .info-label { font-size: 11px; color: #888888; }
-        .info-value { font-size: 16px; font-weight: 700; }
-        .tf-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
-        .trend-up { color: #00ffaa; font-weight: bold; }
-        .trend-down { color: #ff0055; font-weight: bold; }
-        .action-container { display: flex; gap: 12px; margin: 16px 12px; }
-        .btn-action { flex: 1; padding: 14px; border-radius: 12px; font-size: 14px; font-weight: 700; cursor: pointer; text-align: center; }
-        .btn-buy { background: rgba(0, 240, 255, 0.1); border: 1px solid #00f0ff; color: #00f0ff; }
-        .btn-reject { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.15); color: #FFFFFF; }
-    </style>
-</head>
-<body>
+<!doctype html><html lang="uz"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#07080c">
+<meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="NPS AlgoMatrix">
+<meta name="description" content="NPS AlgoMatrix — shaxsiy savdo ilovasi: sinalgan strategiyalar, sessiyalar, yangilik taymeri, jurnal.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="img/apple-touch-icon.png"><link rel="icon" href="img/icon-192.png">
+<title>NPS AlgoMatrix</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Qora-oltin dizayn: telefon uchun, bitta ekran — bitta bo'lim, pastda tab panel. */
+:root{
+  --ink:#07080c; --ink2:#0b0d13; --panel:#10131b; --panel2:#171b26; --line:#232a39; --gline:rgba(232,184,74,.22);
+  --fg:#eef0f5; --mute:#8b93a7; --gold:#e8b84a; --gold2:#f7dc8c; --gold-ink:#1a1305;
+  --gg:linear-gradient(135deg,#fff1c1 0%,#f2c75c 35%,#c8922e 70%,#8a5a14 100%);
+  --buy:#2fd29a; --sell:#ff5d6c; --warn:#f2b441; --info:#6aa8ff;
+  --f-disp:"Unbounded","Trebuchet MS",sans-serif; --f-body:"IBM Plex Sans","Segoe UI",Roboto,sans-serif; --f-num:"JetBrains Mono",ui-monospace,Consolas,monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--ink);color:var(--fg);font:15px/1.5 var(--f-body);
+  background-image:radial-gradient(900px 420px at 50% -120px,rgba(232,184,74,.13),transparent 70%),radial-gradient(600px 400px at 110% 30%,rgba(106,168,255,.05),transparent 70%);
+  background-attachment:fixed;
+  padding:0 max(16px,env(safe-area-inset-right,0px)) calc(92px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.wrap{max-width:560px;margin:0 auto}
+header{position:sticky;top:0;z-index:5;margin:0 -16px;padding:calc(10px + env(safe-area-inset-top,0px)) 16px 10px;
+  background:rgba(7,8,12,.82);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--gline);
+  display:flex;align-items:center;justify-content:space-between;gap:10px}
+.brand{display:flex;align-items:center;gap:10px;min-width:0;flex:1}
+.brand>div{min-width:0}
+.brand img{width:38px;height:38px;border-radius:11px;flex:none;box-shadow:0 0 0 1px var(--gline),0 6px 18px rgba(232,184,74,.18)}
+.brand b{font:700 14.5px/1.1 var(--f-disp);display:block;background:var(--gg);-webkit-background-clip:text;background-clip:text;color:transparent;white-space:nowrap}
+.brand small{color:var(--mute);font-size:11.5px;white-space:nowrap;display:block;overflow:hidden;text-overflow:ellipsis}
+.hright{display:flex;align-items:center;gap:8px}
+.clock{text-align:right;font-family:var(--f-num)}
+.clock b{font-size:15px;display:block;font-variant-numeric:tabular-nums;color:var(--gold2)}
+.clock small{color:var(--mute);font-size:10px;letter-spacing:.08em}
+.lang{display:flex;border:1px solid var(--line);border-radius:9px;overflow:hidden}
+.lang button{font:600 10.5px/1 var(--f-body);padding:7px 6px;border:0;background:transparent;color:var(--mute);cursor:pointer}
+.lang button[aria-pressed="true"]{background:var(--gg);color:var(--gold-ink)}
+@media (max-width:420px){.brand small{display:none}} @media (max-width:360px){.clock small{display:none}}
+h1{font:700 22px/1.2 var(--f-disp);margin:20px 0 4px;text-wrap:balance}
+h1 .g{background:var(--gg);-webkit-background-clip:text;background-clip:text;color:transparent}
+.lead{color:var(--mute);margin:0 0 16px;max-width:62ch}
+h2{font:600 11.5px/1 var(--f-body);letter-spacing:.14em;text-transform:uppercase;color:var(--gold);margin:24px 0 10px;display:flex;align-items:center;gap:8px}
+h2::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,var(--gline),transparent)}
+.num{font-family:var(--f-num);font-variant-numeric:tabular-nums}
+.card{background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--line);border-radius:16px;padding:16px;position:relative}
+.card.gold{border-color:var(--gline);box-shadow:0 0 0 1px rgba(232,184,74,.05) inset,0 10px 30px rgba(0,0,0,.35)}
+.stack{display:grid;gap:10px}
+.row{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.pill{display:inline-flex;align-items:center;gap:6px;font:600 10.5px/1 var(--f-body);letter-spacing:.06em;text-transform:uppercase;padding:5px 8px;border-radius:99px;border:1px solid currentColor;white-space:nowrap}
+.pill.on{color:var(--buy)} .pill.off{color:var(--mute)} .pill.soon{color:var(--warn)} .pill.danger{color:var(--sell)}
+.pill.on::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor;box-shadow:0 0 8px currentColor}
+.buy{color:var(--buy)} .sell{color:var(--sell)} .mute{color:var(--mute)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;font:600 13px/1 var(--f-body);padding:10px 14px;border-radius:11px;border:1px solid var(--line);background:var(--panel2);color:var(--fg);text-decoration:none;cursor:pointer}
+.btn.pri{background:var(--gg);color:var(--gold-ink);border-color:transparent}
+.btn.sm{padding:8px 10px;font-size:12px}
+.btn.ghost{background:transparent}
+.btn:disabled{opacity:.5}
+.btn:focus-visible,.tab:focus-visible,input:focus-visible,select:focus-visible,.seg button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+/* bozor pillalari */
+.mk{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.mk div{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:9px 8px;min-width:0}
+.mk small{display:block;color:var(--mute);font-size:10.5px;letter-spacing:.05em}
+.mk b{display:block;font:600 13px/1.3 var(--f-num);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mk i{font:600 11.5px var(--f-num);font-style:normal}
+/* yangilik */
+.news .when{font:600 34px/1 var(--f-num);font-variant-numeric:tabular-nums;color:var(--gold2);letter-spacing:.02em}
+.news.hot{border-color:rgba(255,93,108,.55);box-shadow:0 0 0 1px rgba(255,93,108,.15) inset,0 0 28px rgba(255,93,108,.15)}
+.news.hot .when{color:var(--sell)}
+.news .ttl{font-weight:600;margin:6px 0 2px}
+.news ul{list-style:none;margin:12px 0 0;padding:0;display:grid;gap:6px;font-size:13px}
+.news li{display:flex;justify-content:space-between;gap:10px;color:var(--mute);border-top:1px solid var(--line);padding-top:6px}
+.news li b{font-family:var(--f-num);color:var(--fg);font-weight:500;white-space:nowrap}
+.alert{margin-top:10px;font-size:13.5px;padding:10px 12px;border-radius:10px;background:rgba(255,93,108,.1);color:#ffb3ba}
+/* sessiyalar */
+.sess{display:grid;grid-template-columns:1fr auto;gap:4px 12px;align-items:center;padding:12px 0;border-top:1px solid var(--line)}
+.sess:first-child{border-top:0;padding-top:0}
+.sess b{font-weight:600}
+.sess .cd{font:600 13px var(--f-num);font-variant-numeric:tabular-nums}
+.sess small{grid-column:1/-1;color:var(--mute);font-size:12.5px}
+.bar{grid-column:1/-1;height:4px;border-radius:4px;background:var(--panel2);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--gg);width:0}
+/* signal kartalari */
+.scard{display:grid;gap:9px}
+.scard .hd{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.scard h3{font:700 15px/1.3 var(--f-disp);margin:0}
+.scard h3 small{display:block;font:500 12px var(--f-body);color:var(--mute);margin-top:3px}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;font-size:14px}
+.kv span{color:var(--mute)} .kv b{font-family:var(--f-num);font-weight:600;text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.lv{font-size:13.5px;color:var(--mute)} .lv b{font-family:var(--f-num);color:var(--fg)}
+.acts{display:flex;gap:8px;flex-wrap:wrap}
+.toolbar{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap}
+.status{font-size:13px;color:var(--mute)} .status.err{color:var(--sell)}
+.skel{height:86px;border-radius:16px;background:linear-gradient(90deg,var(--panel),var(--panel2),var(--panel));background-size:200% 100%;animation:sk 1.4s infinite}
+@keyframes sk{to{background-position:-200% 0}}
+.sig{display:grid;grid-template-columns:1fr auto;gap:3px 12px;padding:12px 0;border-top:1px solid var(--line)}
+.sig:first-child{border-top:0;padding-top:0}
+.sig .t{font-weight:600} .sig small{color:var(--mute);font-size:12.5px}
+.sig .r{text-align:right;font-family:var(--f-num);font-variant-numeric:tabular-nums}
+.tot{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.tot div{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 12px;min-width:0}
+.tot small{color:var(--mute);font-size:11px;display:block}
+.tot b{font:600 16px/1.3 var(--f-num);white-space:nowrap}
+.note{font-size:13px;color:var(--mute);margin-top:12px}
+/* grafik */
+.seg{display:flex;gap:6px}
+.seg button{flex:1;font:600 13px var(--f-body);padding:9px 6px;border-radius:10px;border:1px solid var(--line);background:var(--panel2);color:var(--mute);cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--gg);color:var(--gold-ink);border-color:transparent}
+.chart{width:100%;height:auto;display:block;margin-top:12px}
+.legend{display:grid;gap:6px;margin-top:10px;font-size:13px}
+.legend div{display:flex;justify-content:space-between;gap:10px;align-items:center}
+.legend span{display:flex;align-items:center;gap:8px;color:var(--mute);min-width:0}
+.legend i{width:16px;height:0;border-top:2px dashed currentColor;display:inline-block}
+.legend b{font-family:var(--f-num);font-weight:600;white-space:nowrap;font-size:12.5px}
+/* jurnal va forma */
+.form{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.form label{display:grid;gap:5px;font-size:12.5px;color:var(--mute);min-width:0}
+.form .full{grid-column:1/-1}
+input,select{font-size:16px;color:var(--fg);background:var(--ink2);border:1px solid var(--line);border-radius:10px;padding:10px 12px;width:100%;min-width:0;font-family:var(--f-num)}
+select{font-family:var(--f-body)}
+.jr{display:grid;grid-template-columns:1fr auto;gap:4px 10px;padding:12px 0;border-top:1px solid var(--line)}
+.jr:first-child{border-top:0;padding-top:0}
+.jr .r{text-align:right;font-family:var(--f-num)}
+.jr small{color:var(--mute);font-size:12.5px;grid-column:1/-1}
+.jr .acts{grid-column:1/-1}
+.out{margin-top:14px;display:grid;gap:8px}
+.big{font:700 34px/1 var(--f-num);background:var(--gg);-webkit-background-clip:text;background-clip:text;color:transparent}
+.warn{color:var(--warn);font-size:13.5px}
+/* jadvallar */
+.tbl{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{text-align:left;padding:9px 7px;border-top:1px solid var(--line);white-space:nowrap}
+th{color:var(--mute);font-weight:500;font-size:11.5px;border-top:0}
+td.n,th.n{text-align:right;font-family:var(--f-num);font-variant-numeric:tabular-nums}
+tr.offrow td{color:var(--mute)}
+/* qoidalar va ko'proq */
+.strat h3{font:700 16px/1.3 var(--f-disp);margin:0 0 6px}
+.strat ul{margin:8px 0 0;padding-left:18px;display:grid;gap:4px}
+.tier{font:600 10.5px/1 var(--f-body);letter-spacing:.1em;color:var(--gold)}
+.tier.offt{color:var(--mute)}
+.menu a{display:flex;align-items:center;gap:14px;text-decoration:none;color:var(--fg)}
+.menu a svg{width:26px;height:26px;stroke:var(--gold);fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.menu a b{display:block;font-weight:600}.menu a small{color:var(--mute);font-size:12.5px}
+.back{display:inline-flex;margin-top:16px;color:var(--gold);text-decoration:none;font-size:13.5px;font-weight:600}
+/* kripto */
+.cr{display:grid;gap:10px}
+.cr .top{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.cr .px{font:600 24px/1.1 var(--f-num);font-variant-numeric:tabular-nums}
+.chg{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;text-align:center}
+.chg div{background:var(--ink2);border-radius:10px;padding:7px 4px}
+.chg small{display:block;color:var(--mute);font-size:11px}
+.chg b{font:600 13.5px var(--f-num)}
+.spark{width:100%;height:56px;display:block}
+.hl{display:flex;justify-content:space-between;font-size:13px;color:var(--mute)}
+.hl b{color:var(--fg);font-family:var(--f-num)}
+/* tab panel */
+nav{position:fixed;left:0;right:0;bottom:0;z-index:6;background:rgba(11,13,19,.9);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-top:1px solid var(--gline);
+  padding:6px max(8px,env(safe-area-inset-right,0px)) calc(6px + env(safe-area-inset-bottom,0px)) max(8px,env(safe-area-inset-left,0px))}
+nav .in{max-width:560px;margin:0 auto;display:grid;grid-template-columns:repeat(6,1fr);gap:2px}
+.tab{display:grid;justify-items:center;gap:3px;padding:7px 2px;border-radius:11px;color:var(--mute);text-decoration:none;font-size:10.5px;font-weight:500}
+.tab svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.tab[aria-current="page"]{color:var(--gold2);background:rgba(232,184,74,.1)}
+.foot{color:var(--mute);font-size:12px;margin:28px 0 8px;text-align:center}
+/* ochilish animatsiyasi */
+#splash{position:fixed;inset:0;z-index:50;display:grid;place-items:center;background:#000;transition:opacity .45s ease}
+#splash.out{opacity:0;pointer-events:none}
+#splash[hidden]{display:none}
+#splash .glow{position:absolute;width:140vmin;height:140vmin;border-radius:50%;background:radial-gradient(circle,rgba(255,196,80,.35) 0,rgba(255,170,40,.1) 30%,transparent 62%);animation:glow 1.1s ease-out both}
+#splash img{position:relative;width:min(64vw,280px);aspect-ratio:1;object-fit:cover;animation:pop .7s .15s cubic-bezier(.18,1.4,.4,1) both}
+#splash p{position:absolute;bottom:calc(16vh + env(safe-area-inset-bottom,0px));margin:0;font:700 18px var(--f-disp);letter-spacing:.1em;background:var(--gg);-webkit-background-clip:text;background-clip:text;color:transparent;animation:up .5s .8s ease-out both}
+@keyframes glow{from{opacity:0;transform:scale(.4)}}
+@keyframes pop{from{opacity:0;transform:scale(.55);filter:blur(8px)}}
+@keyframes up{from{opacity:0;transform:translateY(12px)}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head><body>
+<div id="splash" hidden><div class="glow"></div><img src="img/emblema.jpg" alt=""><p>NPS ALGOMATRIX</p></div>
 
-    <div class="lang-bar">
-        <button id="btn-uz" class="lang-btn active" onclick="changeLanguage('uz')">🇺🇿 UZ</button>
-        <button id="btn-ru" class="lang-btn" onclick="changeLanguage('ru')">🇷🇺 RU</button>
-        <button id="btn-en" class="lang-btn" onclick="changeLanguage('en')">🇬🇧 EN</button>
+<div class="wrap">
+<header>
+  <div class="brand"><img src="img/ikonka.jpg" alt=""><div><b>NPS AlgoMatrix</b><small data-t="tagline"></small></div></div>
+  <div class="hright">
+    <div class="lang" role="group" aria-label="Til / Язык / Language"><button type="button" data-l="uz">UZ</button><button type="button" data-l="ru">RU</button><button type="button" data-l="en">EN</button></div>
+    <div class="clock"><b id="clk">--:--:--</b><small data-t="tashkent"></small></div>
+  </div>
+</header>
+
+<!-- BOZOR -->
+<section id="v-bozor" class="view">
+  <h1><span class="g" data-t="mk_h"></span></h1>
+  <p class="lead" data-t="mk_lead"></p>
+  <div class="mk" id="mk"></div>
+  <h2 data-t="nw_h"></h2>
+  <div class="card gold news" id="news"><span class="mute" data-t="nw_load"></span></div>
+  <h2 data-t="mk_sess"></h2>
+  <div class="card" id="sessions"></div>
+  <h2 data-t="mk_where"></h2>
+  <div class="card row" style="flex-wrap:wrap">
+    <span><span data-t="mk_bot"></span> <b class="num">@NPS_AlgoMatrix_Bot</b></span>
+    <a class="btn pri" href="https://t.me/NPS_AlgoMatrix_Bot" target="_blank" rel="noopener" data-t="mk_open"></a>
+  </div>
+</section>
+
+<!-- SIGNALLAR -->
+<section id="v-signallar" class="view" hidden>
+  <h1><span class="g" data-t="sg_h"></span></h1>
+  <p class="lead" data-t="sg_lead"></p>
+  <div class="toolbar"><span class="status" id="st" aria-live="polite"></span><button type="button" class="btn pri" id="refresh" data-t="sg_refresh"></button></div>
+  <div class="stack" id="cards"><div class="skel"></div><div class="skel"></div><div class="skel"></div></div>
+  <h2 data-t="sg_30"></h2>
+  <div class="card"><div class="tot" id="tot"></div><p class="note" data-t="sg_luck"></p></div>
+  <h2 data-t="sg_last"></h2>
+  <div class="card" id="siglist"></div>
+  <p class="note" data-t="sg_r"></p>
+</section>
+
+<!-- GRAFIK -->
+<section id="v-grafik" class="view" hidden>
+  <h1><span class="g" data-t="ch_h"></span></h1>
+  <p class="lead" data-t="ch_lead"></p>
+  <div class="card gold">
+    <div class="seg" role="group" id="chsel"><button type="button" data-c="turtle">XAUUSD</button><button type="button" data-c="nas">NAS100</button><button type="button" data-c="eth">ETHUSD</button></div>
+    <div id="chart"><div class="skel" style="margin-top:12px;height:220px"></div></div>
+    <div class="legend" id="legend"></div>
+  </div>
+  <p class="note" data-t="ch_note"></p>
+</section>
+
+<!-- JURNAL -->
+<section id="v-jurnal" class="view" hidden>
+  <h1><span class="g" data-t="jr_h"></span></h1>
+  <p class="lead" data-t="jr_lead"></p>
+  <div class="card"><div class="tot" id="jtot"></div></div>
+  <h2 data-t="jr_add"></h2>
+  <form class="card" id="jform" autocomplete="off">
+    <div class="form">
+      <label><span data-t="jr_mkt"></span><select id="jsym"><option>XAUUSD</option><option>NAS100</option><option>ETHUSD</option></select></label>
+      <label><span data-t="jr_src"></span><select id="jsrc"><option value="Turtle">Turtle H1</option><option value="NAS">NAS Donchian</option><option value="ETH">ETH Donchian</option><option value="own" data-t="jr_own"></option></select></label>
+      <label class="full"><span data-t="sg_dir"></span><div class="seg" role="group" id="jdir"><button type="button" data-d="1" aria-pressed="true">BUY</button><button type="button" data-d="-1" aria-pressed="false">SELL</button></div></label>
+      <label><span data-t="sg_entry"></span><input id="jent" type="number" inputmode="decimal" step="any" required></label>
+      <label><span>SL</span><input id="jsl" type="number" inputmode="decimal" step="any" required></label>
+      <label><span data-t="jr_tp"></span><input id="jtp" type="number" inputmode="decimal" step="any"></label>
+      <label><span data-t="jr_lot"></span><input id="jlot" type="number" inputmode="decimal" step="0.01" min="0.01" value="0.01" required></label>
+      <label class="full"><span data-t="jr_cent"></span><select id="jcent"><option value="0" data-t="lt_std"></option><option value="1" data-t="lt_cent"></option></select></label>
     </div>
+    <div class="acts" style="margin-top:14px"><button type="submit" class="btn pri" data-t="jr_save"></button></div>
+  </form>
+  <h2 data-t="jr_list"></h2>
+  <div class="card" id="jlist"></div>
+  <div class="acts" style="margin-top:12px"><button type="button" class="btn sm ghost" id="jcsv" data-t="jr_csv"></button></div>
+  <p class="note" data-t="jr_note"></p>
+</section>
 
-    <div class="app-header">
-        <div class="brand-title neon-text-cyan">NPS ProTrade</div>
-        <div id="statusBadge" class="status-badge neon-text-cyan">FAOL ✔</div>
+<!-- LOT -->
+<section id="v-lot" class="view" hidden>
+  <h1><span class="g" data-t="lt_h"></span></h1>
+  <p class="lead" data-t="lt_lead"></p>
+  <div class="card gold">
+    <div class="form">
+      <label class="full"><span data-t="lt_acc"></span>
+        <div class="seg" role="group"><button type="button" id="accStd" aria-pressed="true" data-t="lt_std"></button><button type="button" id="accCent" aria-pressed="false" data-t="lt_cent"></button></div></label>
+      <label class="full"><span data-t="lt_mkt"></span>
+        <select id="sym"><option value="XAUUSD" data-t="lt_o1"></option><option value="NAS100" data-t="lt_o2"></option><option value="ETHUSD" data-t="lt_o3"></option></select></label>
+      <label><span data-t="lt_bal"></span><input id="bal" type="number" inputmode="decimal" min="1" step="1" value="100"></label>
+      <label><span data-t="lt_risk"></span><input id="risk" type="number" inputmode="decimal" min="0.1" max="10" step="0.1" value="0.5"></label>
+      <label class="full"><span data-t="lt_sl"></span><input id="slp" type="number" inputmode="decimal" min="0.01" step="0.01" value="30"></label>
     </div>
-
-    <div class="info-grid">
-        <div class="info-box">
-            <div id="lblUser" class="info-label">Foydalanuvchi</div>
-            <div class="info-value neon-text-cyan">Nurik_Trader</div>
-        </div>
-        <div class="info-box">
-            <div id="lblWinRate" class="info-label">Win Rate (TP2)</div>
-            <div class="info-value" style="color: #00ffaa;">84.6%</div>
-        </div>
+    <div class="out" aria-live="polite">
+      <div class="row"><span data-t="lt_open"></span><span class="big" id="lotOut">0.01</span></div>
+      <div class="row"><span class="mute" data-t="lt_loss"></span><b class="num" id="lossOut">$0</b></div>
+      <div class="row"><span class="mute" data-t="lt_plan"></span><b class="num" id="planOut">$0</b></div>
+      <div class="warn" id="lotWarn" hidden></div>
     </div>
+  </div>
+  <p class="note" data-t="lt_note"></p>
+</section>
 
-    <div class="glass-card">
-        <h4 id="titleTfAnalysis" style="font-size: 14px; margin-bottom: 12px;" class="neon-text-cyan">Ko'p Taymfreymli Tahlil</h4>
-        <div class="tf-row">
-            <span id="lblH4">H4 (Katta Trend)</span>
-            <span id="trendH4" class="trend-up">O'SISH ▲</span>
-        </div>
-        <div class="tf-row">
-            <span id="lblH1">H1 (BOS / Struktura)</span>
-            <span id="trendH1" class="trend-up">O'SISH ▲</span>
-        </div>
-        <div class="tf-row">
-            <span id="lblM15">M15 (Kirish Zonasi)</span>
-            <span id="trendM15" class="trend-down">KUTISH ⏳</span>
-        </div>
-    </div>
+<!-- KO'PROQ -->
+<section id="v-more" class="view" hidden>
+  <h1><span class="g" data-t="mo_h"></span></h1>
+  <div class="stack menu">
+    <a class="card" href="#natija"><svg viewBox="0 0 24 24"><rect x="4" y="12" width="3.5" height="8" rx="1"/><rect x="10.25" y="7" width="3.5" height="13" rx="1"/><rect x="16.5" y="3" width="3.5" height="17" rx="1"/></svg><span><b data-t="bt_h"></b><small data-t="mo_bt"></small></span></a>
+    <a class="card" href="#strategiya"><svg viewBox="0 0 24 24"><path d="M4 5h16M4 12h16M4 19h10"/></svg><span><b data-t="st_h"></b><small data-t="mo_st"></small></span></a>
+    <a class="card" href="#kripto"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M10 7v10M13 7v10M9 8h5a2 2 0 010 4H9h5.5a2 2 0 010 4H9"/></svg><span><b data-t="kr_h"></b><small data-t="mo_kr"></small></span></a>
+  </div>
+</section>
 
-    <div class="action-container">
-        <div id="btnBuy" class="btn-action btn-buy" onclick="executeTrade('BUY')">BITIMNI OCHISH</div>
-        <div id="btnReject" class="btn-action btn-reject" onclick="executeTrade('REJECT')">RAD ETISH</div>
-    </div>
+<section id="v-natija" class="view" hidden>
+  <h1><span class="g" data-t="bt_h"></span></h1>
+  <p class="lead" data-t="bt_lead"></p>
+  <div class="card tbl">
+    <table>
+      <thead><tr><th data-t="bt_c1"></th><th class="n" data-t="bt_c2"></th><th class="n" data-t="bt_c3"></th><th class="n">PF</th><th class="n" data-t="bt_c4"></th><th class="n" data-t="bt_c5"></th><th class="n" data-t="bt_c6"></th><th data-t="bt_c7"></th></tr></thead>
+      <tbody>
+        <tr><td>ETH Donchian-55 H1</td><td class="n">399</td><td class="n">30%</td><td class="n">1.56</td><td class="n buy">+149.9R</td><td class="n buy">+83.7R</td><td class="n">19.9R</td><td class="buy" data-t="bt_on"></td></tr>
+        <tr><td>NAS Donchian-20 M30</td><td class="n">2052</td><td class="n">32%</td><td class="n">1.08</td><td class="n buy">+96.5R</td><td class="n buy">+58.2R</td><td class="n">39.3R</td><td class="buy" data-t="bt_on"></td></tr>
+        <tr><td>XAU Turtle H1 (TP 4R)</td><td class="n">1865</td><td class="n">32%</td><td class="n">1.04</td><td class="n buy">+43.6R</td><td class="n buy">+77.3R</td><td class="n">49.9R</td><td class="buy" data-t="bt_on"></td></tr>
+        <tr class="offrow"><td>XAU NY Pullback M15</td><td class="n">469</td><td class="n">52%</td><td class="n">0.87</td><td class="n sell">−26.2R</td><td class="n">+20.7R</td><td class="n">56R</td><td data-t="bt_off"></td></tr>
+        <tr class="offrow"><td>XAU QISQA M15</td><td class="n">809</td><td class="n">45%</td><td class="n">0.77</td><td class="n sell">−105.2R</td><td class="n">−2.8R</td><td class="n">129R</td><td data-t="bt_off"></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <h2 data-t="bt_years"></h2>
+  <div class="card tbl"><table id="ytab"></table></div>
+  <h2 data-t="bt_how"></h2>
+  <div class="card stack" style="gap:8px"><div data-t="bt_1"></div><div data-t="bt_2"></div><div data-t="bt_3"></div><div class="warn" data-t="bt_4"></div></div>
+  <a class="back" href="#more" data-t="back"></a>
+</section>
 
-    <div class="glass-card">
-        <h4 id="titleWallet" style="font-size: 14px; margin-bottom: 8px;" class="neon-text-cyan">Mening Hamyonim</h4>
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-            <div>
-                <p id="lblBalance" style="font-size: 11px; color: #888888;">USDT BALANS (TRC-20)</p>
-                <h2 style="font-size: 24px; font-weight: 800; margin-top: 4px; color: #00f0ff;">$0.00</h2>
-            </div>
-            <button id="btnDeposit" class="lang-btn" style="padding: 8px 16px; font-size: 12px; border-color: #00f0ff; color: #00f0ff; font-weight: bold;" onclick="alert('Tez kunda USDT to\'lov tizimi ishga tushadi!')">DEPOZIT ➕</button>
-        </div>
-    </div>
+<section id="v-strategiya" class="view" hidden>
+  <h1><span class="g" data-t="st_h"></span></h1>
+  <p class="lead" data-t="st_lead"></p>
+  <div class="stack">
+    <div class="card strat"><span class="tier">ETHUSD · H1 · 0.5%</span><h3>Donchian-55 + trend</h3><ul data-t="st_eth"></ul></div>
+    <div class="card strat"><span class="tier">NAS100 · M30 · 0.5%</span><h3>Donchian-20 + trend</h3><ul data-t="st_nas"></ul></div>
+    <div class="card strat"><span class="tier">XAUUSD · H1 · 0.5%</span><h3>Turtle 20/10</h3><ul data-t="st_turtle"></ul></div>
+    <div class="card strat"><span class="tier offt" data-t="st_offh"></span><ul data-t="st_off"></ul></div>
+    <div class="card strat"><b data-t="st_rules_h"></b><ul data-t="st_rules"></ul></div>
+  </div>
+  <a class="back" href="#more" data-t="back"></a>
+</section>
 
-    <script>
-        const translations = {
-            uz: {
-                user: "Foydalanuvchi", winrate: "Win Rate (TP2)", tfTitle: "Ko'p Taymfreymli Tahlil",
-                h4: "H4 (Katta Trend)", h1: "H1 (BOS / Struktura)", m15: "M15 (Kirish Zonasi)",
-                h4Val: "O'SISH ▲", h1Val: "O'SISH ▲", m15Val: "KUTISH ⏳",
-                btnBuy: "BITIMNI OCHISH", btnReject: "RAD ETISH", wallet: "Mening Hamyonim",
-                balance: "USDT BALANS (TRC-20)", deposit: "DEPOZIT ➕", status: "FAOL ✔"
-            },
-            ru: {
-                user: "Пользователь", winrate: "Вин Рейт (TP2)", tfTitle: "Мульти-Таймфрейм Анализ",
-                h4: "H4 (Старший Тренд)", h1: "H1 (BOS / Структура)", m15: "M15 (Зона Входа)",
-                h4Val: "РОСТ ▲", h1Val: "РОСТ ▲", m15Val: "ОЖИДАНИЕ ⏳",
-                btnBuy: "ОТКРЫТЬ СДЕЛКУ", btnReject: "ОТКЛОНИТЬ", wallet: "Мой Кошелек",
-                balance: "БАЛАНС USDT (TRC-20)", deposit: "ДЕПОЗИТ ➕", status: "АКТИВЕН ✔"
-            },
-            en: {
-                user: "User", winrate: "Win Rate (TP2)", tfTitle: "Multi-Timeframe Analysis",
-                h4: "H4 (Higher Trend)", h1: "H1 (BOS / Structure)", m15: "M15 (Entry Zone)",
-                h4Val: "BULLISH ▲", h1Val: "BULLISH ▲", m15Val: "WAITING ⏳",
-                btnBuy: "EXECUTE TRADE", btnReject: "REJECT", wallet: "My Wallet",
-                balance: "USDT BALANCE (TRC-20)", deposit: "DEPOSIT ➕", status: "ACTIVE ✔"
-            }
-        };
+<section id="v-kripto" class="view" hidden>
+  <h1><span class="g" data-t="kr_h"></span></h1>
+  <p class="lead" data-t="kr_lead"></p>
+  <div class="toolbar"><span class="status" id="kst" aria-live="polite"></span><button type="button" class="btn pri" id="krefresh" data-t="sg_refresh"></button></div>
+  <div class="stack" id="kcards"><div class="skel"></div><div class="skel"></div></div>
+  <h2 data-t="kr_strat"></h2>
+  <div class="card" id="kstrat"></div>
+  <p class="note" data-t="kr_note"></p>
+  <a class="back" href="#more" data-t="back"></a>
+</section>
 
-        function changeLanguage(lang) {
-            document.getElementById('btn-uz').classList.remove('active');
-            document.getElementById('btn-ru').classList.remove('active');
-            document.getElementById('btn-en').classList.remove('active');
-            document.getElementById('btn-' + lang).classList.add('active');
+<p class="foot" data-t="foot"></p>
+</div>
 
-            document.getElementById('lblUser').innerText = translations[lang].user;
-            document.getElementById('lblWinRate').innerText = translations[lang].winrate;
-            document.getElementById('titleTfAnalysis').innerText = translations[lang].tfTitle;
-            
-            document.getElementById('lblH4').innerText = translations[lang].h4;
-            document.getElementById('lblH1').innerText = translations[lang].h1;
-            document.getElementById('lblM15').innerText = translations[lang].m15;
-            document.getElementById('trendH4').innerText = translations[lang].h4Val;
-            document.getElementById('trendH1').innerText = translations[lang].h1Val;
-            document.getElementById('trendM15').innerText = translations[lang].m15Val;
+<nav><div class="in">
+  <a class="tab" href="#bozor" data-v="bozor"><svg viewBox="0 0 24 24"><path d="M3 17l5-6 4 3 7-8"/><path d="M3 21h18"/></svg><span data-t="tab1"></span></a>
+  <a class="tab" href="#signallar" data-v="signallar"><svg viewBox="0 0 24 24"><path d="M13 3L5 14h6l-1 7 8-11h-6z"/></svg><span data-t="tab2"></span></a>
+  <a class="tab" href="#grafik" data-v="grafik"><svg viewBox="0 0 24 24"><path d="M6 4v16M6 8h-2v6h4V8zM12 3v18M10 6h4v9h-4zM18 6v14M16 10h4v6h-4z"/></svg><span data-t="tab3"></span></a>
+  <a class="tab" href="#jurnal" data-v="jurnal"><svg viewBox="0 0 24 24"><path d="M6 3h11a2 2 0 012 2v16l-3-2-3 2-3-2-3 2-3-2V5a2 2 0 012-2z"/><path d="M9 8h6M9 12h6"/></svg><span data-t="tab4"></span></a>
+  <a class="tab" href="#lot" data-v="lot"><svg viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M8 7h8M8 12h2M14 12h2M8 16h2M14 16h2"/></svg><span data-t="tab5"></span></a>
+  <a class="tab" href="#more" data-v="more"><svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></svg><span data-t="tab6"></span></a>
+</div></nav>
 
-            document.getElementById('btnBuy').innerText = translations[lang].btnBuy;
-            document.getElementById('btnReject').innerText = translations[lang].btnReject;
-            document.getElementById('titleWallet').innerText = translations[lang].wallet;
-            document.getElementById('lblBalance').innerText = translations[lang].balance;
-            document.getElementById('statusBadge').innerText = translations[lang].status;
-        }
-
-        function executeTrade(type) {
-            alert("Buyruq berildi: " + type);
-        }
-    </script>
-</body>
-</html>
+<script src="engine.js"></script>
+<script src="i18n.js"></script>
+<script src="app.js"></script>
+</body></html>
